@@ -11,6 +11,18 @@ on:
         required: false
         type: string
         default: 'adopt'
+      maven_command:
+        required: false
+        type: string
+        default: 'install'
+      maven_profiles:
+        required: false
+        type: string
+        default: 'default'
+      maven_pom_path:
+        required: false
+        type: string
+        default: 'pom.xml'
 
 jobs:
   build:
@@ -18,10 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           java-version: ${ inputs.java-version }}
           distribution: ${ inputs.distribution }}
-          settings-path: '.github/workflows/settings.xml'
           cache: 'maven'
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -s .github/workflows/settings.xml -P ${{ inputs.maven_profiles }}
