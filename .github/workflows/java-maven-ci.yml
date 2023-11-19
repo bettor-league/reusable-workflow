@@ -42,4 +42,4 @@ jobs:
         env:
           GITHUB_ACTOR: 'cnadjim'
           GITHUB_TOKEN: ${{ secrets.github-token }}
-        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} -X
