@@ -37,9 +37,8 @@ jobs:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
           server-id: 'github'
-          settings-path: '.github/workflows/settings.xml'
+          server-username: 'cnadjim'
+          server-password: ${{ secrets.github-token }}
           cache: 'maven'
       - name: Build
-        env:
-          GITHUB_TOKEN: ${{ secrets.github-token }}
         run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
