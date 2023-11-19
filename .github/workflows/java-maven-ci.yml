@@ -36,10 +36,10 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
-          server-id: 'github'
-          server-username: 'cnadjim'
-          server-password: ${{ secrets.github-token }}
           cache: 'maven'
       - name: Build and test
         id: build-maven
+        env:
+          GITHUB_ACTOR: 'cnadjim'
+          GITHUB_TOKEN: ${{ secrets.github-token }}
         run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
