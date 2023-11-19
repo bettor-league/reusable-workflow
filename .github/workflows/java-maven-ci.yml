@@ -28,7 +28,7 @@ on:
         default: 'pom.xml'
 
 jobs:
-  build:
+  java-ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,8 +36,10 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
+          server-id: 'github'
+          settings-path: '.github/workflows/settings.xml'
           cache: 'maven'
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }}
-        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -s .github/workflows/settings.xml -P ${{ inputs.maven_profiles }}
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
