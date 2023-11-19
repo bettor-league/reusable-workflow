@@ -40,5 +40,6 @@ jobs:
           server-username: 'cnadjim'
           server-password: ${{ secrets.github-token }}
           cache: 'maven'
-      - name: Build
+      - name: Build and test
+        id: build-maven
         run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
