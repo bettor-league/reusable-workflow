@@ -38,7 +38,7 @@ jobs:
           distribution: ${{ inputs.distribution }}
           cache: 'maven'
       - run: | 
-          base64 -d <<< ${{ inputs.maven-settings }} > /home/runner/.m2/settings.xml
+          base64 -d <<< ${{ secrets.maven-settings }} > /home/runner/.m2/settings.xml
       - name: Build and test
         id: build-maven
         run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
