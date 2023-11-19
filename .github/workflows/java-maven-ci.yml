@@ -3,7 +3,7 @@ name: Common java maven continuous integration workflow
 on:
   workflow_call:
     secrets:
-      github-token:
+      maven-settings:
         required: true
     inputs:
       java-version:
@@ -37,9 +37,7 @@ jobs:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
           cache: 'maven'
+      - run: base64 -d <<< ${{ inputs.maven-settings }} > ./settings.xml
       - name: Build and test
         id: build-maven
-        env:
-          GITHUB_ACTOR: 'cnadjim'
-          GITHUB_TOKEN: ${{ secrets.github-token }}
-        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} -X
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} -s ./settings.xml
