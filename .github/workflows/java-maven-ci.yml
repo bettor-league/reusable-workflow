@@ -66,7 +66,7 @@ jobs:
       - name: Maven execution
         shell: bash
         run: |
-          mvn versions:set -D newVersion=${{ needs.create-artifact-version.outputs.version }} -D timestamp=${{ needs.create-artifact-version.outputs.time_stamp }} -D buildNumber=${{ needs.create-artifact-version.outputs.sha }}
+          mvn versions:set -D newVersion=${{ needs.create-artifact-version.outputs.version }}
           mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.create-artifact-version.outputs.version }}
           mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
 
