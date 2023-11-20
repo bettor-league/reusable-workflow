@@ -17,7 +17,7 @@ runs:
       shell: bash
       run: |
         echo "SDK_VERSION=${{ inputs.sdk_version }}" >> $GITHUB_ENV
-        echo "TIME_STAMP=$(date -d '+2 hours' + '%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+        echo "TIME_STAMP=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
         echo "SHA=$(echo ${{ github.sha }} | cut -c 1-7)" >> $GITHUB_ENV
 
     - name: Generate version

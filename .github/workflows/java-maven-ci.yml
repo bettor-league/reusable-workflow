@@ -84,7 +84,8 @@ jobs:
 
 
   docker-deploy:
-    if: ${{ inputs.upload_artifact }}
+    needs: build-artifact
+    if: ${{ inputs.docker_deploy }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
