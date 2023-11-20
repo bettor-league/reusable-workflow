@@ -9,6 +9,12 @@ outputs:
   version:
     description: "Artifact version"
     value: ${{ steps.generate-version.outputs.version }}
+  sha:
+    description: "SHA"
+    value: ${{ steps.generate-version.outputs.sha }}
+  time_stamp:
+    description: "Time stamp"
+    value: ${{ steps.generate-version.outputs.time_stamp }}
 
 runs:
   using: "composite"
@@ -26,3 +32,5 @@ runs:
       run: |
         echo "VERSION=${{ env.SDK_VERSION }}-${{ env.TIME_STAMP }}-SHA${{ env.SHA }}" >> "$GITHUB_ENV"
         echo "version=${{ env.SDK_VERSION }}-${{ env.TIME_STAMP }}-SHA${{ env.SHA }}" >> "$GITHUB_OUTPUT"
+        echo "sha=${{ env.SHA }}" >> "$GITHUB_OUTPUT"
+        echo "time_stamp=${{ env.TIME_STAMP }}" >> "$GITHUB_OUTPUT"
