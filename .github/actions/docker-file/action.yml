@@ -1,0 +1,9 @@
+name: Artifact version generation action
+description: "empty"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate version parameters
+      shell: bash
+      run:

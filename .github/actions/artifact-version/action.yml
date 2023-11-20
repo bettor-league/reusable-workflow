@@ -1,10 +1,12 @@
-name: Artifact version generation workflow
+name: Artifact version generation action
+description: "empty"
 
 inputs:
   sdk_version:
     required: false
-    type: string
+    description: "bettor-league-sdk version"
     default: "1.0"
+
 outputs:
   version:
     description: "Artifact version"

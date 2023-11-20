@@ -27,10 +27,6 @@ on:
         required: false
         type: boolean
         default: false
-      docker_deploy:
-        required: false
-        type: boolean
-        default: false
 
 jobs:
 
@@ -71,6 +67,7 @@ jobs:
         shell: bash
         run: |
           mvn versions:set -D newVersion=${{ needs.create-artifact-version.outputs.version }} -D timestamp=${{ needs.create-artifact-version.outputs.time_stamp }} -D buildNumber=${{ needs.create-artifact-version.outputs.sha }}
+          mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.create-artifact-version.outputs.version }}
           mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
 
 
