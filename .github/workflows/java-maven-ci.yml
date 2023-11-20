@@ -36,13 +36,19 @@ jobs:
 
   create-version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.generate-version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
         with:
           repository: 'bettor-league/reusable-workflow'
       - uses: ./.github/actions/artifact-version
+        id: generate-version
+      - run: echo artifact-version ${{ steps.generate-version.outputs.version }}
+        shell: bash
 
   build-artifact:
+    needs: create-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -61,15 +67,13 @@ jobs:
 
       - name: Print artifact version
         shell: bash
-        run: echo "${{ env.VERSION }}"
+        run: echo "${{ needs.create-version.outputs.version }}"
 
       - name: Build artifact
         id: build-maven
         shell: bash
         run: |
           mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} 
-          cd ${{ inputs.maven_pom_path }}/target
-          cp *.jar artifact.jar
 
       - name: Upload artifact
         if: ${{ inputs.upload_artifact}}
@@ -80,7 +84,7 @@ jobs:
 
 
   docker-deploy:
-    if: ${{ inputs.docker_deploy}} && ${{ inputs.upload_artifact}}
+    if: ${{ inputs.upload_artifact }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact

@@ -5,6 +5,10 @@ inputs:
     required: false
     type: string
     default: "1.0"
+outputs:
+  version:
+    description: "Artifact version"
+    value: ${{ steps.generate-version.outputs.version }}
 
 runs:
   using: "composite"
@@ -21,4 +25,4 @@ runs:
       shell: bash
       run: |
         echo "VERSION=${{ env.SDK_VERSION }}-${{ env.TIME_STAMP }}-SHA${{ env.SHA }}" >> "$GITHUB_ENV"
-        echo "VERSION=${{ env.SDK_VERSION }}-${{ env.TIME_STAMP }}-SHA${{ env.SHA }}" >> "$GITHUB_OUTPUT"
+        echo "version=${{ env.SDK_VERSION }}-${{ env.TIME_STAMP }}-SHA${{ env.SHA }}" >> "$GITHUB_OUTPUT"
