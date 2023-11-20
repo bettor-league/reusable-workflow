@@ -25,10 +25,19 @@ on:
       maven_pom_path:
         required: false
         type: string
-        default: 'pom.xml'
+        default: '.'
+      upload_artifact:
+        required: false
+        type: boolean
+        default: false
+      docker_deploy:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  java-ci:
+
+  build-artifact:
     runs-on: ubuntu-latest
     steps:
 
@@ -45,6 +54,30 @@ jobs:
       - name: Update maven settings.xml
         run: base64 -d <<< ${{ secrets.maven-settings }} > /home/runner/.m2/settings.xml
 
-      - name: Build and test
+      - name: Build artifact
         id: build-maven
-        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
+        shell: bash
+        run: |
+          mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} 
+          cd ${{ inputs.maven_pom_path }}/target
+          cp *.jar artifact.jar
+
+      - name: Upload artifact
+        if: ${{ inputs.upload_artifact}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact.jar
+          path: ${{ inputs.maven_pom_path }}/target/artifact.jar
+
+
+  docker-deploy:
+    if: ${{ inputs.docker_deploy}} && ${{ inputs.upload_artifact}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact.jar
+          path: ${{ inputs.maven_pom_path }}/target/artifact.jar
+
+
