@@ -71,7 +71,7 @@ jobs:
         id: build-maven
         shell: bash
         run: |
-          mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} version:set -D newVersion=${{ needs.create-artifact-version.outputs.version }} -D timestamp=${{ needs.create-artifact-version.outputs.time_stamp }} -D buildNumber=${{ needs.create-artifact-version.outputs.sha }}
+          mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }} versions:set -D newVersion=${{ needs.create-artifact-version.outputs.version }} -D timestamp=${{ needs.create-artifact-version.outputs.time_stamp }} -D buildNumber=${{ needs.create-artifact-version.outputs.sha }}
 
       - name: Upload artifact
         if: ${{ inputs.upload_artifact}}
