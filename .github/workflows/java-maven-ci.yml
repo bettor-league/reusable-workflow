@@ -2,9 +2,6 @@ name: Common java maven continuous integration workflow
 
 on:
   workflow_call:
-    secrets:
-      maven-settings:
-        required: true
     inputs:
       java-version:
         required: false
@@ -37,10 +34,17 @@ on:
 
 jobs:
 
+  create-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'bettor-league/reusable-workflow'
+      - uses: ./.github/actions/artifact-version
+
   build-artifact:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -52,7 +56,12 @@ jobs:
           cache: 'maven'
 
       - name: Update maven settings.xml
-        run: base64 -d <<< ${{ secrets.maven-settings }} > /home/runner/.m2/settings.xml
+        shell: bash
+        run: base64 -d <<< ${{ secrets.MAVEN_SETTINGS }} > /home/runner/.m2/settings.xml
+
+      - name: Print artifact version
+        shell: bash
+        run: echo "${{ env.VERSION }}"
 
       - name: Build artifact
         id: build-maven
