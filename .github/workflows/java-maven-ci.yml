@@ -67,30 +67,10 @@ jobs:
         shell: bash
         run: base64 -d <<< ${{ secrets.MAVEN_SETTINGS }} > /home/runner/.m2/settings.xml
 
-      - name: Build artifact
-        id: build-maven
+      - name: Maven execution
         shell: bash
         run: |
           mvn versions:set -D newVersion=${{ needs.create-artifact-version.outputs.version }} -D timestamp=${{ needs.create-artifact-version.outputs.time_stamp }} -D buildNumber=${{ needs.create-artifact-version.outputs.sha }}
           mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }} -P ${{ inputs.maven_profiles }}
-
-      - name: Upload artifact
-        if: ${{ inputs.upload_artifact}}
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifact.jar
-          path: ${{ inputs.maven_pom_path }}/target/artifact.jar
-
-
-  docker-deploy:
-    needs: build-artifact
-    if: ${{ inputs.docker_deploy }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: artifact.jar
-          path: ${{ inputs.maven_pom_path }}/target/artifact.jar
 
 
