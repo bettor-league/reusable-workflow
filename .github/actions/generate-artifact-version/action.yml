@@ -1,4 +1,4 @@
-name: Artifact version generation action
+name: Artifact version generation
 description: "empty"
 
 inputs:

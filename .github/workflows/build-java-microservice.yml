@@ -1,0 +1,64 @@
+name: Common java maven microservice continuous integration workflow
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: '17'
+      distribution:
+        required: false
+        type: string
+        default: 'adopt'
+
+jobs:
+
+  generate-artifact-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.generate-version.outputs.version }}
+      sha: ${{ steps.generate-version.outputs.sha }}
+      time_stamp: ${{ steps.generate-version.outputs.time_stamp }}
+    steps:
+      - name: Checkout reusable-workflow repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'bettor-league/reusable-workflow'
+
+      - name: Call generate-artifact-version action
+        uses: .github/actions/generate-artifact-version
+        id: generate-version
+
+      - name: print generated version
+        shell: bash
+        run: echo "${{ steps.generate-version.outputs.version }}"
+
+  build-artifact:
+    needs: generate-artifact-version
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    steps:
+      - name: Checkout reusable-workflow repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'bettor-league/reusable-workflow'
+
+      - name: Call setup-java-maven action
+        uses: .github/actions/setup-java-maven
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
+
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Maven service execution
+        shell: bash
+        run: |
+          mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
+          mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
+          mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }}
+
+

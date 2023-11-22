@@ -1,0 +1,19 @@
+name: Docker image generation action.yml
+description: "empty"
+
+inputs:
+  artefact_name:
+    required: false
+    description: "artefact reference"
+    default: "1.0"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: jar-file
+        path: app.jar
+    - name: Generate docker image
+      shell: bash
+      run:
