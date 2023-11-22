@@ -55,16 +55,17 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
       - name: Checkout reusable-workflow repository
         uses: actions/checkout@v3
         with:
           repository: 'bettor-league/reusable-workflow'
-
-      - name: Checkout project
-        uses: actions/checkout@v3
+          path: '..'
 
       - name: Call setup-java-maven action
-        uses: ./.github/actions/setup-java-maven
+        uses: ../reusable-workflow/.github/actions/setup-java-maven
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
