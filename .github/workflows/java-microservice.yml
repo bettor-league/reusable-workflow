@@ -65,7 +65,7 @@ jobs:
           path: '..'
 
       - name: Call setup-java-maven action
-        uses: ../reusable-workflow/.github/actions/setup-java-maven
+        uses: ./../reusable-workflow/.github/actions/setup-java-maven
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
