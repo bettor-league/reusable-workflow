@@ -21,8 +21,7 @@ runs:
       with:
         java-version: ${{ inputs.java-version }}
         distribution: ${{ inputs.distribution }}
-        cache: 'maven'
 
-    - name: Update maven settings.xml
+    - name: Setup maven
       shell: bash
       run: cp -fr ${GITHUB_ACTION_PATH}/settings.xml  /home/runner/.m2/settings.xml
