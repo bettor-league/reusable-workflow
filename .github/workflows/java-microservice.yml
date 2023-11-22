@@ -42,7 +42,7 @@ jobs:
           repository: 'bettor-league/reusable-workflow'
 
       - name: Call generate-artifact-version action
-        uses: .github/actions/generate-artifact-version
+        uses: ./.github/actions/generate-artifact-version
         id: generate-version
 
       - name: print generated version
@@ -61,7 +61,7 @@ jobs:
           repository: 'bettor-league/reusable-workflow'
 
       - name: Call setup-java-maven action
-        uses: .github/actions/setup-java-maven
+        uses: ./.github/actions/setup-java-maven
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
