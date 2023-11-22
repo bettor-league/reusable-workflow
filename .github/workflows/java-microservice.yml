@@ -62,10 +62,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'bettor-league/reusable-workflow'
-          path: '..'
+          path: '/home/runner/work'
 
       - name: Call setup-java-maven action
-        uses: ./../reusable-workflow/.github/actions/setup-java-maven
+        uses: /home/runner/work/reusable-workflow/.github/actions/setup-java-maven
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
