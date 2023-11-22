@@ -11,7 +11,22 @@ on:
         required: false
         type: string
         default: 'adopt'
-
+      maven_build_core:
+        required: false
+        type: boolean
+        default: false
+      maven_pom_location:
+        required: false
+        type: string
+        default: "."
+      maven_command:
+        required: false
+        type: string
+        default: 'install'
+      upload_artifact:
+        required: false
+        type: boolean
+        default: false
 jobs:
 
   generate-artifact-version:
@@ -54,11 +69,26 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Maven service execution
+      - name: Maven build core
+        if: ${{ inputs.maven_build_core }}
+        shell: bash
+        run: mvn clean install
+
+      - name: Maven command execution
         shell: bash
         run: |
           mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
           mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
           mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_path }}
 
+      - name: Copy jar file
+        if: ${{ inputs.upload_artifact }}
+        shell: bash
+        run: mv ${{ inputs.maven_pom_path }}/target/*.jar artifact.jar
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ inputs.upload_artifact }}
+        with:
+          name: artifact
+          path: artifact.jar
