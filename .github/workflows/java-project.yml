@@ -84,4 +84,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifact
-          path: artifact.jar
+          path: ./java-project/artifact.jar
