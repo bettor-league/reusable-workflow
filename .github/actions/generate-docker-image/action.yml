@@ -34,6 +34,6 @@ runs:
       uses: docker/build-push-action@v5
       with:
         context: ${GITHUB_ACTION_PATH}
-        file: ./Dockerfile
+        file: ${GITHUB_ACTION_PATH}/Dockerfile
         push: true
         tags: bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}
