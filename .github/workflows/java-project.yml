@@ -89,3 +89,5 @@ jobs:
         with:
           artefact_name: ${{ inputs.maven_module_name }}
           artefact_version: ${{ steps.generate-version.outputs.version }}
+          docker_hub_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_hub_token: ${{ secrets.DOCKER_TOKEN }}
