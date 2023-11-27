@@ -1,4 +1,5 @@
-name: Docker image generation action.yml
+name: Docker image generation
+
 description: "empty"
 
 inputs:
