@@ -60,7 +60,7 @@ jobs:
           mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
 
       - name: Maven reactor command execution
-        if: ${{ maven_pom_location != '' }}
+        if: ${{ inputs.maven_pom_location != '' }}
         working-directory: ./java-project
         shell: bash
         run: mvn clean install
