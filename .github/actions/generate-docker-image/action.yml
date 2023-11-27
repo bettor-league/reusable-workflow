@@ -15,6 +15,7 @@ runs:
     - uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.artefact_name }}-${{ inputs.artefact_version }}
+        path: ${GITHUB_ACTION_PATH}
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
@@ -22,8 +23,10 @@ runs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Build and push
+    - name: Push to Docker Hub
       uses: docker/build-push-action@v5
       with:
+        context: ${GITHUB_ACTION_PATH}
+        file: ./Dockerfile
         push: true
         tags: bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}
