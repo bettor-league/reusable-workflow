@@ -1,0 +1,93 @@
+name: Common java maven project workflow
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: '17'
+      distribution:
+        required: false
+        type: string
+        default: 'adopt'
+      maven_module_name:
+        required: false
+        type: string
+        default: '.'
+      maven_command:
+        required: false
+        type: string
+        default: 'install'
+      upload_artifact:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+
+  build-java-project:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    steps:
+      - name: Checkout project directory
+        uses: actions/checkout@v3
+        with:
+          path: java-project
+
+      - name: Checkout reusable-workflow repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'bettor-league/reusable-workflow'
+          ref: 'v1'
+          path: reusable-workflow
+
+      - name: Generate version
+        id: generate-version
+        uses: ./reusable-workflow/.github/actions/generate-artifact-version
+
+      - name: print generated version
+        shell: bash
+        run: echo "${{ steps.generate-version.outputs.version }}"
+
+      - name: Setup java-maven
+        uses: ./reusable-workflow/.github/actions/setup-java-maven
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
+
+      - name: Maven version command execution
+        working-directory: ./java-project
+        shell: bash
+        run: |
+          mvn versions:set -D newVersion=${{ steps.generate-version.outputs.version }} -D processAllModules
+          mvn versions:set-property -D property=sdk.version -D newVersion=${{ steps.generate-version.outputs.version }}
+
+      - name: Maven reactor command execution
+        if: ${{ inputs.maven_module_name != '.' }}
+        working-directory: ./java-project
+        shell: bash
+        run: mvn clean install
+
+      - name: Maven input command execution
+        working-directory: ./java-project
+        shell: bash
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_module_name }}/pom.xml
+
+      - name: Upload artifact
+        if: ${{ inputs.upload_artifact }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.maven_module_name }}-${{ steps.generate-version.outputs.version }}
+          path: ./java-project/${{ inputs.maven_module_name }}/target/${{ inputs.maven_module_name }}-${{ steps.generate-version.outputs.version }}.jar
+
+      - name: Generate docker image
+        if: ${{ inputs.upload_artifact }}
+        id: generate-docker-image
+        uses: ./reusable-workflow/.github/actions/generate-docker-image
+        with:
+          artefact_name: ${{ inputs.maven_module_name }}
+          artefact_version: ${{ steps.generate-version.outputs.version }}
+          docker_hub_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_hub_token: ${{ secrets.DOCKER_TOKEN }}
