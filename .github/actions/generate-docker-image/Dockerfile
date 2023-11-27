@@ -1,10 +1,10 @@
 FROM openjdk:17-jdk-slim-buster
 
-RUN mkdir /app
+RUN mkdir /application
 
-COPY ${ARTIFACT_NAME} /app/artifact.jar
+COPY ${ARTIFACT_NAME} /application/artifact.jar
 
-WORKDIR /app
+WORKDIR /application
 
 EXPOSE ${EXPOSE_PORT}
 

@@ -1,0 +1,29 @@
+name: Docker image generation action.yml
+description: "empty"
+
+inputs:
+  artefact_name:
+    required: false
+    description: "artefact name reference"
+  artefact_version:
+    required: false
+    description: "artefact version reference"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.artefact_name }}-${{ inputs.artefact_version }}
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}

@@ -11,7 +11,7 @@ on:
         required: false
         type: string
         default: 'adopt'
-      maven_pom_location:
+      maven_module_name:
         required: false
         type: string
         default: '.'
@@ -25,6 +25,7 @@ on:
         default: false
 
 jobs:
+
   build-java-project:
     runs-on: ubuntu-latest
     env:
@@ -63,7 +64,7 @@ jobs:
           mvn versions:set-property -D property=sdk.version -D newVersion=${{ steps.generate-version.outputs.version }}
 
       - name: Maven reactor command execution
-        if: ${{ inputs.maven_pom_location != '.' }}
+        if: ${{ inputs.maven_module_name != '.' }}
         working-directory: ./java-project
         shell: bash
         run: mvn clean install
@@ -71,17 +72,18 @@ jobs:
       - name: Maven input command execution
         working-directory: ./java-project
         shell: bash
-        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_location }}/pom.xml
-
-      - name: Copy jar file
-        if: ${{ inputs.upload_artifact }}
-        working-directory: ./java-project
-        shell: bash
-        run: mv ${{ inputs.maven_pom_location }}/target/*.jar artifact.jar
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_module_name }}/pom.xml
 
       - name: Upload artifact
         if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v3
         with:
-          name: artifact
-          path: ./java-project/artifact.jar
+          name: ${{ inputs.maven_module_name }}-${{ steps.generate-version.outputs.version }}
+          path: ./java-project/${{ inputs.maven_module_name }}/target/${{ inputs.maven_module_name }}-${{ steps.generate-version.outputs.version }}.jar
+
+      - name: Generate docker image
+        id: generate-docker-image
+        uses: ./reusable-workflow/.github/actions/generate-docker-image
+        with:
+          artefact_name: ${{ inputs.maven_module_name }}
+          artefact_version: ${{ steps.generate-version.outputs.version }}
