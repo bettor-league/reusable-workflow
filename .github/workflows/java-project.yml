@@ -14,7 +14,6 @@ on:
       maven_pom_location:
         required: false
         type: string
-        default: "."
       maven_command:
         required: false
         type: string
@@ -57,10 +56,11 @@ jobs:
         working-directory: ./java-project
         shell: bash
         run: |
-          mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }} -DprocessAllModules
+          mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }} -D processAllModules
           mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
 
       - name: Maven reactor command execution
+        if: ${{ maven_pom_location != '' }}
         working-directory: ./java-project
         shell: bash
         run: mvn clean install
