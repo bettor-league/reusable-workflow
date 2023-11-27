@@ -82,6 +82,7 @@ jobs:
           path: ./java-project/${{ inputs.maven_module_name }}/target/${{ inputs.maven_module_name }}-${{ steps.generate-version.outputs.version }}.jar
 
       - name: Generate docker image
+        if: ${{ inputs.upload_artifact }}
         id: generate-docker-image
         uses: ./reusable-workflow/.github/actions/generate-docker-image
         with:
