@@ -22,7 +22,10 @@ runs:
     - uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.artefact_name }}-${{ inputs.artefact_version }}
-        path: ${GITHUB_ACTION_PATH}
+
+    - name: Display structure of downloaded files
+      shell: bash
+      run: ls -R
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
@@ -33,6 +36,5 @@ runs:
     - name: Setup maven
       shell: bash
       run: |
-        cd ${GITHUB_ACTION_PATH}
         docker build -t bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }} . --build-arg ARTIFACT_NAME=${{ inputs.artefact_name }}-${{ inputs.artefact_version }}.jar
         docker push bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}
