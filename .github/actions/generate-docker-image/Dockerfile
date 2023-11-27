@@ -1,11 +1,8 @@
 FROM openjdk:17-jdk-slim-buster
-
-RUN mkdir /application
-
-COPY ${ARTIFACT_NAME} /application/artifact.jar
+ARG ARTIFACT_NAME
 
 WORKDIR /application
 
-EXPOSE ${EXPOSE_PORT}
+COPY ${ARTIFACT_NAME} /application/artifact.jar
 
-CMD ["java", "-Xmx50m", "-jar", "/artifact.jar", "--spring.profiles.active=docker"]
+CMD ["java", "-jar", "artifact.jar", "--spring.profiles.active=docker"]

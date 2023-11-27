@@ -30,10 +30,9 @@ runs:
         username: ${{ inputs.docker_hub_username }}
         password: ${{ inputs.docker_hub_token }}
 
-    - name: Push to Docker Hub
-      uses: docker/build-push-action@v5
-      with:
-        context: ${GITHUB_ACTION_PATH}
-        file: ${GITHUB_ACTION_PATH}/Dockerfile
-        push: true
-        tags: bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}
+    - name: Setup maven
+      shell: bash
+      run: |
+        cd ${GITHUB_ACTION_PATH}
+        docker build -t bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }} . --build-arg ARTIFACT_NAME=${{ inputs.artefact_name }}-${{ inputs.artefact_version }}.jar
+        docker push bettorleague/${{ inputs.artefact_name }}:${{ inputs.artefact_version }}
