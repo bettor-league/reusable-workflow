@@ -77,7 +77,7 @@ jobs:
         if: ${{ inputs.upload_artifact }}
         working-directory: ./java-project
         shell: bash
-        run: mv ${{ inputs.maven_pom_path }}/target/*.jar artifact.jar
+        run: mv ${{ inputs.maven_pom_location }}/target/*.jar artifact.jar
 
       - name: Upload artifact
         if: ${{ inputs.upload_artifact }}
