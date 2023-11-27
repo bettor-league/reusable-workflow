@@ -1,0 +1,84 @@
+name: Common java maven project workflow
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: '17'
+      distribution:
+        required: false
+        type: string
+        default: 'adopt'
+      maven_pom_location:
+        required: false
+        type: string
+        default: "."
+      maven_command:
+        required: false
+        type: string
+        default: 'install'
+      upload_artifact:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build-java-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project directory
+        uses: actions/checkout@v3
+        with:
+          path: java-project
+
+      - name: Checkout reusable-workflow repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'bettor-league/reusable-workflow'
+          path: reusable-workflow
+
+      - name: Generate version
+        id: generate-version
+        uses: ./reusable-workflow/.github/actions/generate-artifact-version
+
+      - name: print generated version
+        shell: bash
+        run: echo "${{ steps.generate-version.outputs.version }}"
+
+      - name: Setup java-maven
+        uses: ./reusable-workflow/.github/actions/setup-java-maven
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
+
+      - name: Maven version command execution
+        working-directory: ./java-project
+        shell: bash
+        run: |
+          mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }} -DprocessAllModules
+          mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
+
+      - name: Maven reactor command execution
+        working-directory: ./java-project
+        shell: bash
+        run: mvn clean install
+
+      - name: Maven input command execution
+        working-directory: ./java-project
+        shell: bash
+        run: mvn ${{ inputs.maven_command }} -f ${{ inputs.maven_pom_location }}/pom.xml
+
+      - name: Copy jar file
+        if: ${{ inputs.upload_artifact }}
+        working-directory: ./java-project
+        shell: bash
+        run: mv ${{ inputs.maven_pom_path }}/target/*.jar artifact.jar
+
+      - name: Upload artifact
+        if: ${{ inputs.upload_artifact }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: artifact.jar
