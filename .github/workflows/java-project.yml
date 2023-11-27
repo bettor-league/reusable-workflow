@@ -56,8 +56,8 @@ jobs:
         working-directory: ./java-project
         shell: bash
         run: |
-          mvn versions:set -D newVersion=${{ needs.generate-artifact-version.outputs.version }} -D processAllModules
-          mvn versions:set-property -D property=sdk.version -D newVersion=${{ needs.generate-artifact-version.outputs.version }}
+          mvn versions:set -D newVersion=${{ steps.generate-version.outputs.version }} -D processAllModules
+          mvn versions:set-property -D property=sdk.version -D newVersion=${{ steps.generate-version.outputs.version }}
 
       - name: Maven reactor command execution
         if: ${{ inputs.maven_pom_location != '' }}
